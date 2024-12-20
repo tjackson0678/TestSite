@@ -1,5 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+
+running_directory = os.path.dirname(os.path.abspath(__file__))
+#print(running_directory)
+
+from pathlib import Path
+
+# Get the current working directory
+current_directory = Path.cwd()
+
+# File name and path
+file_name = "latencyTimeGraph.pdf"
+file_path = os.path.join(running_directory, file_name) # For text paths: current_directory / file_name
 
 x = ['06:00','10:00','14:00','18:00','20:00']
 y1 =  [12.949,13.125,30.162,12.698,12.733]
@@ -13,5 +26,5 @@ plt.xlabel('Time of Day')
 plt.title("UNC and Stanford RTT")
 
 plt.legend()
-plt.savefig("/Users/tjacks5/TestSite/python/ECGR5187/ECGR5187_FinalProj5.pdf")
+plt.savefig(file_path)
 plt.show()
