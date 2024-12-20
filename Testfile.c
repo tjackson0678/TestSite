@@ -9,8 +9,9 @@
 
 int main()
 {
+    int num = 5; 
 
-    printf("Hello World\n");
+    printf("Hello Terrence %d\n", num);
 
     return 0;
 }
