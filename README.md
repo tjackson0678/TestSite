@@ -10,6 +10,6 @@
 - Latex typescript and examples from projects
 
 ### Some things to add: 
-* JS Code
+* React JS Code
 * DB code
 * Other? 
