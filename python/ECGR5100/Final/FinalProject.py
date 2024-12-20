@@ -5,7 +5,7 @@ import os
 # Get current and running directory
 running_directory = os.path.dirname(os.path.abspath(__file__))
 current_directory = os.getcwd()
-print("PWD: ", current_directory, "\n", "Running dir: ", running_directory)
+#print("PWD: ", current_directory, "\n", "Running dir: ", running_directory)
 
 # File name and path
 file_name = "ProgramClockSpeeds.pdf"
@@ -23,3 +23,4 @@ plt.title("Run-Times C Program Chart")
 
 plt.legend()
 plt.savefig(file_name)
+# plt.show() ## Show the pdf file output 
