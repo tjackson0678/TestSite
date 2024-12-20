@@ -24,3 +24,4 @@ plt.title("UNC and Stanford RTT")
 
 plt.legend()
 plt.savefig(file_path)
+# plt.show()
