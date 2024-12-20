@@ -1,5 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+
+# Get current and running directory
+running_directory = os.path.dirname(os.path.abspath(__file__))
+current_directory = os.getcwd()
+#print("PWD: ", current_directory, "\n", "Running dir: ", running_directory)
+
+# File name and path
+file_name = "ProgramClockSpeeds.pdf"
+file_path = os.path.join(running_directory, file_name) 
 
 x = ['1','2','3','4']
 y1 =  [0,26,168,634]
@@ -12,5 +22,5 @@ plt.xlabel('Iterations')
 plt.title("Run-Times C Program Chart")
 
 plt.legend()
-plt.savefig("ECGR5100_FinalProj.pdf")
+plt.savefig(file_name)
 plt.show()
