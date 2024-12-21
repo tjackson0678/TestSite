@@ -22,5 +22,5 @@ plt.xlabel('Iterations')
 plt.title("Run-Times C Program Chart")
 
 plt.legend()
-plt.savefig(file_name)
+plt.savefig(file_path)
 # plt.show() ## Show the pdf file output 
