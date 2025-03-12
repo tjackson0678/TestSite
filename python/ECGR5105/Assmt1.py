@@ -1,15 +1,21 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
+# Get current and running directory
+running_directory = os.path.dirname(os.path.abspath(__file__))
 
 # create a simple dataset of people
 df = pd.read_csv('python/ECGR5105/D3.csv')
-#print(df.head())
 
 theta0 = 0
 theta1 = .5
 learn_rate = 0.06
+
+# File name and path
+file_name = "regressionModel.pdf"
+file_path = os.path.join(running_directory, file_name)
 
 #compute prediction
 def pred(theta, x):
@@ -26,8 +32,7 @@ def compute_mse(theta, x, y):
         t0_total += ((pred(theta, x[r]) - y[r])) 
         #compute gradient wrt theta1
         #t1_total += ((pred(theta, x[r]) - y[r])*x[r]) 
-        #print("this is cost: ", t0_total)
-    #print("This is the total: ", t0_total)
+        
     cost = (1/m) * t0_total 
     #t1_cost = (1/m) * t1_total
    
@@ -36,18 +41,16 @@ def compute_mse(theta, x, y):
 # Gradient Descent Function
 def gradient_descent(X, y, learning_rate, iterations):
     m = len(y)
-    theta = theta1 #np.random.randn(1) # Initialize parameters randomly
+    theta = theta1 # Initialize parameters
     cost_history = []
 
     #tmp0 = compute_mse(theta, X, y)
 
-    #print("This is final initial theta: ", theta)
     for i in range(iterations):
         gradients = compute_mse(theta, X, y) #(1/m) * X.T.dot(X.dot(theta) - y)
         theta -= learning_rate * gradients
         cost_history.append(compute_mse(theta, X, y))
 
-    #rint("This is final cost theta: ", theta)
     return theta, cost_history
 
 
@@ -68,20 +71,21 @@ def plot_gradient_descent(learning_rate):
     plt.title('Effect of Learning Rate on Gradient Descent Convergence')
     plt.legend()
     plt.grid()
-    plt.show()
+    plt.savefig(file_path)
+
+    #plt.show()
 
 
+theta_opt, cost = gradient_descent(df.X1, df.Y, learning_rate=learn_rate, iterations=30)
+print("Optimized X1 Theta:", theta_opt)
+print("cost at optimized theta: ",cost[-1], "\n")
+
+theta_opt, cost = gradient_descent(df.X2, df.Y, learning_rate=learn_rate, iterations=30)
+print("Optimized X2 Theta:", theta_opt)
+print("cost at X2 optimized theta",cost[-1], "\n")
 
 theta_opt, cost = gradient_descent(df.X3, df.Y, learning_rate=learn_rate, iterations=30)
-print("Optimized Theta:", theta_opt)
-print("cost at optimized theta",cost[-1] )
-
-#print("Compute_mse X1: ", compute_mse(theta1, df.X1, df.Y))
-#print("Compute_mse X2: ", compute_mse(theta1,df.X2, df.Y))
-#print("Compute_mse X3: ", compute_mse(theta1,df.X3, df.Y))
+print("Optimized X3 Theta:", theta_opt)
+print("cost at X3 optimized theta",cost[-1], "\n")
 
 plot_gradient_descent(learn_rate)
-
-
-
-#print("First round of data: ", pred(theta0, theta1, df.X1[2]))
