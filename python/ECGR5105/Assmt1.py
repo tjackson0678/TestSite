@@ -15,7 +15,9 @@ learn_rate = 0.06
 
 # File name and path
 file_name = "regressionModel.pdf"
+file_name2 = "regressionModel2.pdf"
 file_path = os.path.join(running_directory, file_name)
+file_path = os.path.join(running_directory, file_name2)
 
 #compute prediction
 def pred(theta, x):
@@ -75,6 +77,22 @@ def plot_gradient_descent(learning_rate):
 
     #plt.show()
 
+# Interactive visualization of learning rates
+def plot_gradient_descent2(learning_rate):
+    iterations = 30
+    _, cost_history_3 = gradient_descent(df.X3, df.Y, learning_rate=0.08, iterations=iterations)
+
+    
+    plt.figure(figsize=(8, 5))
+    plt.plot(range(iterations), cost_history_3, label=f'X3 Learning Rate: {0.08}', color='green')
+    plt.xlabel('Iterations')
+    plt.ylabel('Cost Function')
+    plt.title('Effect of Learning Rate on Gradient Descent Convergence')
+    plt.legend()
+    plt.grid()
+    plt.savefig(file_path2)
+
+
 
 theta_opt, cost = gradient_descent(df.X1, df.Y, learning_rate=learn_rate, iterations=30)
 print("Optimized X1 Theta:", theta_opt)
@@ -89,3 +107,4 @@ print("Optimized X3 Theta:", theta_opt)
 print("cost at X3 optimized theta",cost[-1], "\n")
 
 plot_gradient_descent(learn_rate)
+plot_gradient_descent(.08)
