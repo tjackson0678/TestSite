@@ -80,11 +80,11 @@ theta_opt, cost = gradient_descent(df.X1, df.Y, learning_rate=learn_rate, iterat
 print("Optimized X1 Theta:", theta_opt)
 print("cost at optimized theta: ",cost[-1], "\n")
 
-theta_opt, cost = gradient_descent(df.X2, df.Y, learning_rate=learn_rate, iterations=30)
+theta_opt, cost = gradient_descent(df.X2, df.Y, learning_rate=.05, iterations=30)
 print("Optimized X2 Theta:", theta_opt)
 print("cost at X2 optimized theta",cost[-1], "\n")
 
-theta_opt, cost = gradient_descent(df.X3, df.Y, learning_rate=learn_rate, iterations=30)
+theta_opt, cost = gradient_descent(df.X3, df.Y, learning_rate=.08, iterations=30)
 print("Optimized X3 Theta:", theta_opt)
 print("cost at X3 optimized theta",cost[-1], "\n")
 
