@@ -17,7 +17,7 @@ learn_rate = 0.06
 file_name = "regressionModel.pdf"
 file_name2 = "regressionModel2.pdf"
 file_path = os.path.join(running_directory, file_name)
-file_path = os.path.join(running_directory, file_name2)
+file_path2 = os.path.join(running_directory, file_name2)
 
 #compute prediction
 def pred(theta, x):
@@ -107,4 +107,4 @@ print("Optimized X3 Theta:", theta_opt)
 print("cost at X3 optimized theta",cost[-1], "\n")
 
 plot_gradient_descent(learn_rate)
-plot_gradient_descent(.08)
+plot_gradient_descent2(.08)
