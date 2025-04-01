@@ -1,1 +1,1 @@
-rates
+print
