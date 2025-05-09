@@ -7,7 +7,7 @@ import os
 running_directory = os.path.dirname(os.path.abspath(__file__))
 
 # create a simple dataset of people
-df = pd.read_csv('python/ECGR5105/D3.csv')
+df = pd.read_csv('python/ECGR5105/Energy.csv')
 
 theta0 = 0
 theta1 = .5

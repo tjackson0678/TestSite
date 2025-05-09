@@ -26,7 +26,7 @@ X_2 = pd.DataFrame(X_2)
 df.insert(0, "intercept",X_0)
 df.insert(0, "price2",X_1)
 df.insert(0, "area2",X_2)
-#print(df.head())
+# print(df.head())
 
 
 X = df.loc[:,['intercept','bathrooms']]
