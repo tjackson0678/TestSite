@@ -1,0 +1,59 @@
+import heapq
+
+class UndirectedWeightedGraph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_node(self, node):
+        if node not in self.graph:
+            self.graph[node] = []
+
+    def add_edge(self, u, v, weight):
+        self.add_node(u)
+        self.add_node(v)
+        self.graph[u].append((v, weight))
+        self.graph[v].append((u, weight))  # For undirected graph
+
+    def get_neighbors(self, node):
+        return self.graph.get(node, [])
+
+    def get_edge_weight(self, u, v):
+        for neighbor, weight in self.graph.get(u, []):
+            if neighbor == v:
+                return weight
+        return None  # Edge not found
+
+# Example usage:
+g = UndirectedWeightedGraph()
+g.add_edge('A', 'B', 5)
+g.add_edge('A', 'C', 10)
+g.add_edge('B', 'C', 3)
+
+
+"""
+print(f"Neighbors of A: {g.get_neighbors('A')}")
+print(f"Weight of edge B-C: {g.get_edge_weight('B', 'C')}")
+"""
+
+def dijkstra(graph, start_node):
+    distances = {node: float('inf') for node in graph}
+    distances[start_node] = 0
+    priority_queue = [(0, start_node)]  # (distance, node)
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+
+        if current_distance > distances[current_node]:
+            continue
+
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(priority_queue, (distance, neighbor))
+    return distances
+
+distance = dijkstra(g, 'A')
+
+print("Distance from A: ", distance)
+
