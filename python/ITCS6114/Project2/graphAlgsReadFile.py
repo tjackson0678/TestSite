@@ -1,17 +1,28 @@
 class Graph: 
 
-    def __init__(self, vertices=0): 
+    def __init__(self, vertices=0, directed=False): 
         self.V = vertices 
         self.graph = [] 
+        self.directed = directed
         # Adjacency list for Dijkstra's algorithm
-        self.adj_list = [[] for _ in range(vertices)]
+        self.adj_list = {chr(65+i): [] for i in range(vertices)}
+        # Mapping between vertex letters and indices
+        self.vertex_to_index = {chr(65+i): i for i in range(vertices)}
+        self.index_to_vertex = {i: chr(65+i) for i in range(vertices)}
 
     # Function to add an edge to graph 
     def addEdge(self, u, v, w): 
-        self.graph.append([u, v, w]) 
-        # Also add to adjacency list (for Dijkstra)
+        # Convert letters to indices for the edge list
+        u_idx = self.vertex_to_index.get(u, ord(u) - 65)
+        v_idx = self.vertex_to_index.get(v, ord(v) - 65)
+        
+        self.graph.append([u_idx, v_idx, w]) 
+        # Add to adjacency list using letter identifiers
         self.adj_list[u].append((v, w))
-        self.adj_list[v].append((u, w))  # For undirected graph
+        
+        # If the graph is undirected, add the reverse edge as well
+        if not self.directed:
+            self.adj_list[v].append((u, w))
 
     # Function to read graph from a file
     @classmethod
@@ -20,49 +31,79 @@ class Graph:
         Read a graph from a file.
         
         Expected file format:
-        First line: Number of vertices (n)
-        Following lines: Each line represents an edge with format "u v w"
-        where u and v are vertex indices (0 to n-1) and w is the edge weight.
+        First line: Number of vertices (n), Number of edges (m), Graph type (U/D)
+        Next m lines: Each line represents an edge with format "u v w"
+            where u and v are vertex letters (A, B, C, etc.) and w is the edge weight.
+        Last line: Source vertex letter for algorithms
         
         Example:
-        4
-        0 1 10
-        0 2 6
-        0 3 5
-        1 3 15
-        2 3 4
+        4 5 U
+        A B 10
+        A C 6
+        A D 5
+        B D 15
+        C D 4
+        A
         """
         try:
             with open(filename, 'r') as file:
                 lines = file.readlines()
                 
-                # First line contains the number of vertices
-                num_vertices = int(lines[0].strip())
+                # First line contains: vertices, edges, graph type
+                first_line = lines[0].strip().split()
+                if len(first_line) < 3:
+                    raise ValueError("First line must contain: vertices, edges, graph type (U/D)")
                 
-                # Create a new graph with the specified number of vertices
-                graph = cls(num_vertices)
+                num_vertices = int(first_line[0])
+                num_edges = int(first_line[1])
+                graph_type = first_line[2].upper()
                 
-                # Read edges from the remaining lines
-                for i in range(1, len(lines)):
+                if graph_type not in ['U', 'D']:
+                    raise ValueError("Graph type must be 'U' for undirected or 'D' for directed")
+                
+                directed = (graph_type == 'D')
+                
+                # Create a new graph with the specified number of vertices and direction
+                graph = cls(num_vertices, directed)
+                
+                # Read edges from the next num_edges lines
+                for i in range(1, num_edges + 1):
+                    if i >= len(lines):
+                        raise ValueError(f"Expected {num_edges} edges, but file has fewer lines")
+                        
                     line = lines[i].strip()
                     if not line:  # Skip empty lines
                         continue
                         
                     # Parse the edge information
                     parts = line.split()
-                    if len(parts) >= 3:
-                        u = int(parts[0])
-                        v = int(parts[1])
-                        w = int(parts[2])
-                        graph.addEdge(u, v, w)
+                    if len(parts) < 3:
+                        raise ValueError(f"Line {i+1} does not contain a valid edge (u v w)")
+                        
+                    u = parts[0]  # Vertex as letter
+                    v = parts[1]  # Vertex as letter
+                    w = int(parts[2])  # Weight as integer
+                    graph.addEdge(u, v, w)
+                
+                # Last line contains the source vertex
+                if num_edges + 1 < len(lines):
+                    source = lines[num_edges + 1].strip()
+                    if source and source in graph.adj_list:
+                        graph.source = source
+                    else:
+                        print(f"Warning: Invalid source vertex '{source}' specified, using 'A' as default")
+                        graph.source = 'A'
+                else:
+                    print("Warning: No source vertex specified, using 'A' as default")
+                    graph.source = 'A'
                 
                 return graph
                 
         except FileNotFoundError:
             print(f"Error: File '{filename}' not found.")
             return None
-        except ValueError:
-            print(f"Error: Invalid data format in file '{filename}'.")
+        except ValueError as e:
+            print(f"Error: {str(e)}")
             return None
         except Exception as e:
             print(f"Error reading file '{filename}': {str(e)}")
@@ -72,48 +113,35 @@ class Graph:
     # (truly uses path compression technique) 
     def find(self, parent, i): 
         if parent[i] != i: 
-
-            # Reassignment of node's parent 
-            # to root node as 
-            # path compression requires 
+            # Reassignment of node's parent to root node as path compression requires 
             parent[i] = self.find(parent, parent[i]) 
         return parent[i] 
 
     # A function that does union of two sets of x and y 
     # (uses union by rank) 
     def union(self, parent, rank, x, y): 
-
-        # Attach smaller rank tree under root of 
-        # high rank tree (Union by Rank) 
+        # Attach smaller rank tree under root of high rank tree (Union by Rank) 
         if rank[x] < rank[y]: 
             parent[x] = y 
         elif rank[x] > rank[y]: 
             parent[y] = x 
-
-        # If ranks are same, then make one as root 
-        # and increment its rank by one 
+        # If ranks are same, then make one as root and increment its rank by one 
         else: 
             parent[y] = x 
             rank[x] += 1
 
-    # The main function to construct MST 
-    # using Kruskal's algorithm 
+    # The main function to construct MST using Kruskal's algorithm 
     def KruskalMST(self): 
-
         # This will store the resultant MST 
         result = [] 
-
+        
         # An index variable, used for sorted edges 
         i = 0
-
         # An index variable, used for result[] 
         e = 0
 
-        # Sort all the edges in 
-        # non-decreasing order of their 
-        # weight 
-        self.graph = sorted(self.graph, 
-                            key=lambda item: item[2]) 
+        # Sort all the edges in non-decreasing order of their weight 
+        self.graph = sorted(self.graph, key=lambda item: item[2]) 
 
         parent = [] 
         rank = [] 
@@ -124,19 +152,14 @@ class Graph:
             rank.append(0) 
 
         # Number of edges to be taken is less than to V-1 
-        while e < self.V - 1: 
-
-            # Pick the smallest edge and increment 
-            # the index for next iteration 
+        while e < self.V - 1 and i < len(self.graph): 
+            # Pick the smallest edge and increment the index for next iteration 
             u, v, w = self.graph[i] 
             i = i + 1
             x = self.find(parent, u) 
             y = self.find(parent, v) 
 
-            # If including this edge doesn't 
-            # cause cycle, then include it in result 
-            # and increment the index of result 
-            # for next edge 
+            # If including this edge doesn't cause cycle, include it in result
             if x != y: 
                 e = e + 1
                 result.append([u, v, w]) 
@@ -147,7 +170,10 @@ class Graph:
         print("Edges in the constructed MST") 
         for u, v, weight in result: 
             minimumCost += weight 
-            print("%d -- %d == %d" % (u, v, weight)) 
+            # Convert indices back to letters for output
+            u_letter = self.index_to_vertex[u]
+            v_letter = self.index_to_vertex[v]
+            print(f"{u_letter} -- {v_letter} == {weight}") 
         print("Minimum Spanning Tree", minimumCost) 
     
     # Dijkstra's algorithm to find shortest path from source vertex
@@ -155,11 +181,11 @@ class Graph:
         import heapq
         
         # Initialize distances with infinity for all vertices
-        dist = [float('inf')] * self.V
+        dist = {v: float('inf') for v in self.adj_list}
         # Distance of source vertex from itself is 0
         dist[src] = 0
         # To track the shortest path
-        prev = [None] * self.V
+        prev = {v: None for v in self.adj_list}
         
         # Priority queue to get the vertex with minimum distance
         pq = [(0, src)]  # (distance, vertex)
@@ -213,7 +239,7 @@ class Graph:
         path = path[::-1]
         
         # Print the path and distance
-        print(f"Shortest path from {src} to {target}: {' -> '.join(map(str, path))}")
+        print(f"Shortest path from {src} to {target}: {' -> '.join(path)}")
         print(f"Total distance: {dist[target]}")
     
     # Function to print all shortest paths from source
@@ -221,16 +247,16 @@ class Graph:
         dist, prev = self.dijkstra(src)
         
         print(f"Shortest paths from source vertex {src}:")
-        for i in range(self.V):
-            if i == src:
+        for v in self.adj_list:
+            if v == src:
                 continue
                 
-            if dist[i] == float('inf'):
-                print(f"No path to vertex {i}")
+            if dist[v] == float('inf'):
+                print(f"No path to vertex {v}")
             else:
                 # Reconstruct the path
                 path = []
-                at = i
+                at = v
                 while at is not None:
                     path.append(at)
                     at = prev[at]
@@ -238,26 +264,35 @@ class Graph:
                 # Reverse the path to get it from source to target
                 path = path[::-1]
                 
-                print(f"To vertex {i}: {' -> '.join(map(str, path))}, distance: {dist[i]}")
+                print(f"To vertex {v}: {' -> '.join(path)}, distance: {dist[v]}")
+
+    # Run Dijkstra's algorithm from the source vertex specified in the input file
+    def run_dijkstra_from_source(self):
+        if hasattr(self, 'source'):
+            print(f"\nRunning Dijkstra's algorithm from source vertex {self.source}:")
+            self.print_all_shortest_paths(self.source)
+        else:
+            print("No source vertex specified. Using 'A' as default.")
+            self.print_all_shortest_paths('A')
 
 
 # Driver code 
 if __name__ == '__main__': 
     # Example 1: Creating a graph manually
     print("Example 1: Creating a graph manually")
-    g = Graph(4) 
-    g.addEdge(0, 1, 10) 
-    g.addEdge(0, 2, 6) 
-    g.addEdge(0, 3, 5) 
-    g.addEdge(1, 3, 15) 
-    g.addEdge(2, 3, 4) 
+    g = Graph(4)  # 4 vertices: A, B, C, D
+    g.addEdge('A', 'B', 10) 
+    g.addEdge('A', 'C', 6) 
+    g.addEdge('A', 'D', 5) 
+    g.addEdge('B', 'D', 15) 
+    g.addEdge('C', 'D', 4) 
 
     # Function call 
     g.KruskalMST()
     
     # Test Dijkstra's algorithm
     print("\nTesting Dijkstra's algorithm:")
-    source = 0
+    source = 'A'
     g.print_all_shortest_paths(source)
     
     # Example 2: Reading a graph from a file
@@ -268,5 +303,4 @@ if __name__ == '__main__':
     # if graph_from_file:
     #     print(f"Graph loaded from {file_path}")
     #     graph_from_file.KruskalMST()
-    #     print("\nDijkstra's algorithm on the loaded graph:")
-    #     graph_from_file.print_all_shortest_paths(0)
+    #     graph_from_file.run_dijkstra_from_source()
