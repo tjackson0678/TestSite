@@ -1,6 +1,0 @@
-Token
-sgp_e3cb05880bc40429_a562083647dde168edf7f9a86a1f773eb5ac7a23
-https://sourcegraph.com/
-
-
-sgp_e3cb05880bc40429_c7f606f07f322235d3fe8d37e49d2fbc9545df1f
