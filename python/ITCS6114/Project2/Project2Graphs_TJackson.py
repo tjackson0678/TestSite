@@ -1,3 +1,10 @@
+"""
+Terrence Jackson 
+ITCS 6114 - Project 2
+Summer 2025 - 31 July
+"""
+
+import os 
 class Graph: 
 
     def __init__(self, vertices=0, directed=False): 
@@ -36,14 +43,6 @@ class Graph:
             where u and v are vertex letters (A, B, C, etc.) and w is the edge weight.
         Last line: Source vertex letter for algorithms
         
-        Example:
-        4 5 U
-        A B 10
-        A C 6
-        A D 5
-        B D 15
-        C D 4
-        A
         """
         try:
             with open(filename, 'r') as file:
@@ -278,29 +277,16 @@ class Graph:
 
 # Driver code 
 if __name__ == '__main__': 
-    # Example 1: Creating a graph manually
-    print("Example 1: Creating a graph manually")
-    g = Graph(4)  # 4 vertices: A, B, C, D
-    g.addEdge('A', 'B', 10) 
-    g.addEdge('A', 'C', 6) 
-    g.addEdge('A', 'D', 5) 
-    g.addEdge('B', 'D', 15) 
-    g.addEdge('C', 'D', 4) 
+    # Example: get the file path: 
+    running_directory = os.path.dirname(os.path.abspath(__file__))
 
-    # Function call 
-    g.KruskalMST()
+    # Add current directory filename to running directory
+    filename = running_directory + '/uwGraph1.txt'
     
-    # Test Dijkstra's algorithm
-    print("\nTesting Dijkstra's algorithm:")
-    source = 'A'
-    g.print_all_shortest_paths(source)
-    
-    # Example 2: Reading a graph from a file
-    print("\nExample 2: Reading a graph from a file")
-    # Uncomment the following lines and provide a valid file path to test file input
-    # file_path = "graph_input.txt"
-    # graph_from_file = Graph.from_file(file_path)
-    # if graph_from_file:
-    #     print(f"Graph loaded from {file_path}")
-    #     graph_from_file.KruskalMST()
-    #     graph_from_file.run_dijkstra_from_source()
+    # Example: Reading a graph from a file
+    print("\nExample: Reading a graph from a file")
+    graph_from_file = Graph.from_file(filename)
+    if graph_from_file:
+         print(f"Graph loaded from {filename}")
+         graph_from_file.KruskalMST()
+         graph_from_file.run_dijkstra_from_source()
