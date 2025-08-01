@@ -5,6 +5,8 @@ Summer 2025 - 31 July
 """
 
 import os 
+import sys 
+
 class Graph: 
 
     def __init__(self, vertices=0, directed=False): 
@@ -277,16 +279,24 @@ class Graph:
 
 # Driver code 
 if __name__ == '__main__': 
+
     # Example: get the file path: 
     running_directory = os.path.dirname(os.path.abspath(__file__))
 
+    # Check if there is command line input
+    if len(sys.argv) < 2: 
+        print("\n---- Usage: python3 Project2Graphs_TJackson.py <input_file> ----")
+        print("---- Using default uwGraph1.txt ----")
+        input_file = '/uwGraph1.txt'
+    else: 
+        input_file = f'/{sys.argv[1]}'
+
     # Add current directory filename to running directory
-    filename = running_directory + '/uwGraph1.txt'
+    filename = running_directory + input_file
     
     # Example: Reading a graph from a file
-    print("\nExample: Reading a graph from a file")
+    print("\nExample: Reading a graph from: ",input_file)
     graph_from_file = Graph.from_file(filename)
     if graph_from_file:
-         print(f"Graph loaded from {filename}")
          graph_from_file.KruskalMST()
          graph_from_file.run_dijkstra_from_source()
