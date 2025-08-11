@@ -136,11 +136,11 @@ This implementation provides a comprehensive solution for graph algorithms with 
 
 
 ### Running Instructions
- - Line 284 of the code contains the testfile name and can be changed to test separate input files. Default is '/uwGraph1.txt' 
+ - Line 284 of the code specifies the testfile name and can be changed to test separate input files. Default is '/uwGraph1.txt' 
  - uwGraph1, uwGraph2, dwGraph1, and dwGraph2 have been included as sample files to run agains this code. 
   
   ```
-      filename = running_directory + '/uwGraph1.txt'
+  284    filename = running_directory + '/uwGraph1.txt'
   ```
 
 
