@@ -46,7 +46,7 @@ protected:
                       eventComparator> eventQueue;
 };
 
-/*void simulation::run () {
+void simulation::run () {
 
   while (! eventQueue.empty ()) {
 
@@ -56,7 +56,7 @@ protected:
     nextEvent->processEvent ();
     delete nextEvent;
   }
-}*/
+}
 
 class storeSimulation : public simulation {
 public:
@@ -69,6 +69,36 @@ public:
   unsigned int freeChairs;
   double       profit;  
 } theSimulation;
+
+bool storeSimulation::canSeat (unsigned int numberOfPeople) {
+    
+  std::cout << "Time: " << time;
+  std::cout << " group of " << numberOfPeople << " customers arrives";
+
+  if (numberOfPeople < freeChairs) {
+    std::cout << " is seated\n";
+    freeChairs -= numberOfPeople;
+    return true;
+  }
+  else {
+    std::cout << " no room, they leave\n";
+    return false;
+  }
+}
+
+void storeSimulation::order (unsigned int numberOfScoops) {
+    
+  std::cout << "Time: " << time << " serviced order for "
+            << numberOfScoops << '\n';
+  profit += 0.35 * numberOfScoops;
+}
+
+void storeSimulation::leave (unsigned int numberOfPeople) {
+    
+  std::cout << "Time: " << time << " group of size "
+            << numberOfPeople << " leaves\n";
+  freeChairs += numberOfPeople;
+}
 
 
 //Finally, leave events free up chairs, but do not spawn any new events:
@@ -84,13 +114,15 @@ private:
   unsigned int size;
 };
 
-void leaveEvent::processEvent () {
-
-  theSimulation.leave (size);
-}
-
-
-//An order event similarly spawns a leave event:
+class arriveEvent : public event {
+public:
+  arriveEvent (unsigned int t, unsigned int groupSize)
+    : event (t), size (groupSize)
+    { }
+  virtual void processEvent ();
+private:
+  unsigned int size;
+};
 
 class orderEvent : public event {
 public:
@@ -101,6 +133,16 @@ public:
 private:
   unsigned int size;
 };
+
+
+void leaveEvent::processEvent () {
+
+  theSimulation.leave (size);
+}
+
+
+//An order event similarly spawns a leave event:
+
 
 void orderEvent::processEvent () {
 
@@ -114,16 +156,6 @@ void orderEvent::processEvent () {
 }
 
 
-class arriveEvent : public event {
-public:
-  arriveEvent (unsigned int t, unsigned int groupSize)
-    : event (t), size (groupSize)
-    { }
-  virtual void processEvent ();
-private:
-  unsigned int size;
-};
-
 void arriveEvent::processEvent () {
 
   if (theSimulation.canSeat (size))
@@ -132,14 +164,12 @@ void arriveEvent::processEvent () {
 }
 
 
-
-
 int main () {
 
   std::cout << "Ice Cream Store simulation from Chapter 9\n";
 
   // Load queue with some number of initial events.
-  /*for (unsigned t = 0; t < 20; t += irand (6)) {
+  for (unsigned t = 0; t < 20; t += irand (6)) {
 
     std::cout << "pumping queue with event " << t << '\n';
     theSimulation.scheduleEvent (new arriveEvent (t, 1 + irand (4)));
@@ -150,6 +180,6 @@ int main () {
 
   std::cout << "Total profits " << theSimulation.profit
             << "\nEnd of ice cream store simulation\n";
-*/
+
   return 0;
 }
