@@ -1,4 +1,4 @@
-# Detailed Analysis of Data Structures in graphAlgsReadFile.py
+## Data Structure Analysis
 
 The implementation uses several key data structures to represent graphs and support the algorithms. Here's a detailed breakdown:
 

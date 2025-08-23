@@ -139,12 +139,12 @@ def timeSort(code_strg):
     return rtn_time
 
 # Example usage:
-input_lst = [1000, 2000, 5000, 10000, 30000, 50000]
+input_lst = [1000, 2000, 5000, 10000, 30000, 50000, 60000]
 input_sz = 5000
 my_revlist = rev_arr(input_sz)
 
 # Create random lists 
-for num in range(1, 7):
+for num in range(1, 8):
     my_randlist1 = randIntList(input_lst[0])
     my_randlist1 = [int(x) for x in my_randlist1]
     my_randlist2 = randIntList(input_lst[1])
@@ -157,6 +157,8 @@ for num in range(1, 7):
     my_randlist5 = [int(x) for x in my_randlist5]
     my_randlist6 = randIntList(input_lst[5])
     my_randlist6 = [int(x) for x in my_randlist6]
+    my_randlist7 = randIntList(input_lst[6])
+    my_randlist7 = [int(x) for x in my_randlist7]
 print(" ")
 
 # Create sorted lists
@@ -166,6 +168,7 @@ my_sortedlist3 = quicksort(my_randlist3)
 my_sortedlist4 = quicksort(my_randlist4)
 my_sortedlist5 = quicksort(my_randlist5)
 my_sortedlist6 = quicksort(my_randlist6)
+my_sortedlist7 = quicksort(my_randlist7)
 
 # Create reverse lists
 my_revlist1 = rev_arr(len(my_sortedlist1))
@@ -174,12 +177,13 @@ my_revlist3 = rev_arr(len(my_sortedlist3))
 my_revlist4 = rev_arr(len(my_sortedlist4))
 my_revlist5 = rev_arr(len(my_sortedlist5))
 my_revlist6 = rev_arr(len(my_sortedlist6))
+my_revlist7 = rev_arr(len(my_sortedlist7))
 
 # Measure quickSort run time
 q = []
 q_s = []
 q_r = []
-for num in range(1, 7):
+for num in range(1, 8):
     qS_string = f"sorted_list = quicksort(my_randlist{num})"
     qS_string_sorted = f"sorted_list2 = quicksort(my_sortedlist{num})"
     qS_string_reversed = f"sorted_list3 = quicksort(my_revlist{num})"
@@ -197,7 +201,7 @@ print(" ")
 q2 = []
 q2_s = []
 q2_r = []
-for num in range(1, 7):
+for num in range(1, 8):
     qS2_string = f"sorted_list = quicksort_mod(my_randlist{num})"
     qS2_string_sorted = f"sorted_list2 = quicksort_mod(my_sortedlist{num})"
     qS2_string_reversed = f"sorted_list3 = quicksort_mod(my_revlist{num})"
@@ -214,7 +218,7 @@ print(" ")
 h = []
 h_s = []
 h_r = []
-for num in range(1, 7):
+for num in range(1, 8):
     hs_string = f"sorted_list = heapInsert(my_randlist{num})"
     hs_string_sorted = f"sorted_list2 = heapInsert(my_sortedlist{num})"
     hs_string_reversed = f"sorted_list3 = heapInsert(my_revlist{num})"
@@ -231,7 +235,7 @@ print(" ")
 m = []
 m_s = []
 m_r = []
-for num in range(1, 7):
+for num in range(1, 8):
     ms_string = f"sorted_list = merge_sort(my_randlist{num})"
     ms_string_sorted = f"sorted_list2 = merge_sort(my_sortedlist{num})"
     ms_string_reversed = f"sorted_list3 = merge_sort(my_revlist{num})"
@@ -248,7 +252,7 @@ print(" ")
 i = []
 i_s = []
 i_r = []
-for num in range(1, 7):
+for num in range(1, 8):
     is_string = f"sorted_list = insertionSort(my_randlist{num})"
     is_string_sorted = f"sorted_list2 = insertionSort(my_sortedlist{num})"
     is_string_reversed = f"sorted_list3 = insertionSort(my_revlist{num})"
@@ -261,7 +265,7 @@ for num in range(1, 7):
 print(f"InsertionSort Elapsed time: {is_time:.8f} seconds")
 print(" ")
 
-x = [1000, 2000, 5000, 10000, 30000, 50000]
+x = [1000, 2000, 5000, 10000, 30000, 50000, 60000]
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
 
