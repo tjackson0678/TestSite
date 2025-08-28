@@ -18,6 +18,9 @@ public:
   event (unsigned int t) : time (t)
     { }
 
+  // Virtual destructor to allow safe deletion of derived objects.
+  virtual ~event() {}
+
   // Execute event by invoking this method.
   virtual void processEvent () = 0;
 
