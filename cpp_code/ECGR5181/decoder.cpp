@@ -9,12 +9,12 @@
 #include <string>
 #include <stdio.h>
 
-#define R_TYPE 0110011
-#define S_TYPE 0100011
-#define I_TYPE 0010011
+#define R_TYPE 110011
+#define S_TYPE 100011
+#define I_TYPE 10011
 #define SB_TYPE 1100011
-#define U_TYPE 0110111 
-#define UJ_TYPE 0110111
+#define U_TYPE 110111 
+#define UJ_TYPE 110111
 
 
 void readBinaryToArray(int arr[32]) {
@@ -40,16 +40,47 @@ void readBinaryToArray(int arr[32]) {
 // Example usage
 int main() {
     int bits[32];
+    std::string codeType = ""; 
     readBinaryToArray(bits);
 
-    int opCode = bits[];
+    int opCode = bits[25] * 1000000 + bits[26] * 100000 + bits[27] * 10000 + bits[28] * 1000 + bits[29] * 100 + bits[30] * 10 + bits[31] * 1;
 
     // Print array
 
-    std::cout << "These are the last 6 bits: " << std::endl;
-    for (int i = 26; i < 32; ++i) {
+    /*std::cout << "These are the last 6 bits: " << std::endl;
+    for (int i = 25; i < 32; ++i) {
         std::cout << bits[i];
+    }*/
+
+    switch (opCode)
+    {   
+    case R_TYPE:
+        //std::cout << "R_TYPE" << std::endl;
+        codeType = "R_TYPE";
+        break;
+    case S_TYPE:
+        //std::cout << "S_TYPE" << std::endl;
+        codeType = "S_TYPE";
+        break;
+    case I_TYPE:                
+        //std::cout << "I_TYPE" << std::endl;
+        codeType = "I_TYPE";
+        break;
+    case SB_TYPE:          
+        //std::cout << "SB_TYPE" << std::endl;
+        codeType = "SB_TYPE";
+        break;                  
+    case U_TYPE:        
+        //std::cout << "U_TYPE" << std::endl;
+        codeType = "U_TYPE";
+        break;
+    default:
+        std::cout << "Does not match any type" << std::endl;
+        break;
     }
-    std::cout << std::endl;
+
+   
+    std::cout << "Code Type: " << codeType << std::endl;
+
     return 0;
 }
