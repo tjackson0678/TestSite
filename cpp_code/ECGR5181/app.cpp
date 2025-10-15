@@ -169,20 +169,20 @@ void arriveEvent::processEvent () {
 
 int main () {
 
-  std::cout << "Ice Cream Store simulation from Chapter 9\n";
+  std::cout << "\nIce Cream Store simulation from Chapter 9\n";
 
   // Load queue with some number of initial events.
   for (unsigned t = 0; t < 20; t += irand (5)) {
 
     std::cout << "pumping queue with event " << t << '\n';
-    theSimulation.scheduleEvent (new arriveEvent (t, 1 + irand (4)));
+    theSimulation.scheduleEvent (new arriveEvent (t, 1 + irand (5)));
   }
 
   // Run the simulation.
   theSimulation.run ();
 
   std::cout << "Total profits " << theSimulation.profit
-            << "\nEnd of ice cream store simulation\n";
+            << "\nEnd of ice cream store simulation\n"; 
 
   return 0; 
 }

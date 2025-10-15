@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include "RISC_V_Opcodes.h"
 
 #define R_TYPE 110011
 #define S_TYPE 100011
@@ -45,6 +46,8 @@ int main() {
 
     int opCode = bits[25] * 1000000 + bits[26] * 100000 + bits[27] * 10000 + bits[28] * 1000 + bits[29] * 100 + bits[30] * 10 + bits[31] * 1;
 
+    int test = 0b110011;
+
     // Print array
 
     /*std::cout << "These are the last 6 bits: " << std::endl;
@@ -52,11 +55,18 @@ int main() {
         std::cout << bits[i];
     }*/
 
+    std::cout << "Opcode for ADD: " << OPCODE_ADD << std::endl;
+
     switch (opCode)
     {   
     case R_TYPE:
         //std::cout << "R_TYPE" << std::endl;
         codeType = "R_TYPE";
+        int rd = bits[20] * 16 + bits[21] * 8 + bits[22] * 4 + bits[23] * 2 + bits[24] * 1;
+        int func3 = bits[17] * 4 + bits[18] * 2 + bits[19] * 1; 
+        int rs1 = bits[12] * 16 + bits[13] * 8 + bits[14] * 4 + bits[15] * 2 + bits[16] * 1;
+        int rs2 = bits[7] * 16 + bits[8] * 8 + bits[9] * 4 + bits[10] * 2 + bits[11] * 1;
+        int func7 = bits[0] * 64 + bits[1] * 32 + bits[2] * 16 + bits[3] * 8 + bits[4] * 4 + bits[5] * 2 + bits[6] * 1;
         break;
     case S_TYPE:
         //std::cout << "S_TYPE" << std::endl;
@@ -78,7 +88,6 @@ int main() {
         std::cout << "Does not match any type" << std::endl;
         break;
     }
-
    
     std::cout << "Code Type: " << codeType << std::endl;
 
