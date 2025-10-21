@@ -1,0 +1,27 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# Get current and running directory
+running_directory = os.path.dirname(os.path.abspath(__file__))
+current_directory = os.getcwd()
+#print("PWD: ", current_directory, "\n", "Running dir: ", running_directory)
+
+# File name and path
+file_name = "CostComparisonsGraph.pdf"
+file_path = os.path.join(running_directory, file_name) 
+
+y1 = [150,153,158,161,165]
+x =  [2, 4, 6, 8, 10]
+y2 =  [153,156,157,158,161]
+
+
+plt.plot(x,y1, color='black', label='Budgeted Cost')
+plt.plot(x,y2, color='green', label='Predicted Reductions')
+plt.ylabel('Costs (K/yr)')
+plt.xlabel('Time (Years)')
+plt.title("Comparative costs over time")
+
+plt.legend()
+plt.savefig(file_path)
+plt.show()
