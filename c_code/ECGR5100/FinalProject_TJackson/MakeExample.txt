@@ -1,0 +1,7 @@
+% make 
+  cc -c X2_Main.c 
+  cc -c X2.c
+  cc -o X2 X2_Main.o X2.o
+% X2
+  This is the result of dividing 16 into 5: 3
+  The product of multiplying 5 and 5: 25

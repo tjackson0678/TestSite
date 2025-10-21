@@ -20,7 +20,7 @@ typedef struct
 
 int main()
 {
-    char sensor_stream[] = "A1:23.5,45%|B2:-5.2,60%|C3:18.0,89%|D4:14,33%|E5:50,75%|F6:7,45%|G7:15,55%|H8:30,92%|I9:21.0,35%|";
+    char sensor_stream[] = "A1:23.5,45%|H8:30,92%|I9:21.0,35%|JA:5.8,55%|";
     Sensor sensors[MAX_SENSORS];
     int sensor_count = 0;
     int sensor_max = 0;
@@ -32,27 +32,27 @@ int main()
     char *token;
     token = strtok(sensor_stream, delimiters);
 
-    sscanf(token, "%2[^:]:%f,%d%%", sensors[sensor_count].id, &sensors[sensor_count].temperature, &sensors[sensor_count].humidity);
-    sensor_max = sensors[0].humidity;
-    sensor_maxId = sensors[0].id;
-
     while (token != NULL)
     {
-        sensor_count++;
         sscanf(token, "%2[^:]:%f,%d%%", sensors[sensor_count].id, &sensors[sensor_count].temperature, &sensors[sensor_count].humidity);
         sensor_total += sensors[sensor_count].temperature;
+        sensor_count++;
 
-        // Find sensor with max humidity
-        if (sensors[sensor_count].humidity > sensor_max)
-        {
-            sensor_max = sensors[sensor_count].humidity;
-            sensor_maxId = sensors[sensor_count].id;
-        }
         token = strtok(NULL, delimiters); // Continue tokenizing
     }
 
     // Compute average temperature
     float sensor_avg = sensor_total / sensor_count;
+
+    for (int j = 0; j < sensor_count; j++)
+    {
+        // Find sensor with max humidity
+        if (sensors[j].humidity > sensor_max)
+        {
+            sensor_max = sensors[j].humidity;
+            sensor_maxId = sensors[j].id;
+        }
+    }
 
     printf("\nParsed %d sensor readings\n", sensor_count);
     printf("Average temperature: %.1f C\n", sensor_avg);
