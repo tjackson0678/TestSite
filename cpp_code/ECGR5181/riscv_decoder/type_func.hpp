@@ -1,3 +1,8 @@
+// Warriors Group
+// ECGR 5181 - Computer Architecture
+// Project 3 - Function Definitions
+// Fall 2025
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -7,6 +12,26 @@
 #include <string>
 #include <stdio.h>
 #include <functional>
+
+using namespace std;
+
+// Function to read a 32-bit binary string from user
+bool readBinaryString(std::string &binary) {
+    cout << "Enter a 32-bit binary number: ";
+    cin >> binary;
+    cout << endl; 
+    if (binary.length() != 32) {
+        cerr << "Error: Input must be 32 bits.\n";
+        return false;
+    }
+    for (char c : binary) {
+        if (c != '0' && c != '1') {
+            cerr << "Error: Invalid character in input.\n";
+            return false;
+        }
+    }
+    return true;
+}
 
 // Build a key from opcode (7 bits), funct7 (7 bits) and funct3 (3 bits):
 // key = (opcode << 10) | (funct7 << 3) | funct3
@@ -91,13 +116,6 @@ std::vector<std::string> rtype_ops_from_bits(const std::string &opcode_bits,
     return rtype_ops_from_ints(opc, f3, f7);
 }
 
-// Numeric hash function for the (opcode,funct7,funct3) triple
-std::size_t rtype_triple_hash(uint8_t opcode7, uint8_t funct3, uint8_t funct7) {
-    uint32_t key = make_rtype_key_uint(opcode7, funct7, funct3);
-    return std::hash<uint32_t>{}(key);
-}
-
-
 
 // Build the I-type map (maps key -> list of possible instructions)
 static inline std::unordered_map<uint16_t, std::vector<std::string>> build_itype_map_with_opcode() {
@@ -131,6 +149,20 @@ static inline std::unordered_map<uint16_t, std::vector<std::string>> build_itype
     add("fld",    "0000111", "011");
     add("jalr",   "1100111", "000");
 
+    //S-TYPE Store instructions
+    add("sb",     "0100011", "000");
+    add("sh",     "0100011", "001");
+    add("sw",     "0100011", "010");
+    add("sd",     "0100011", "011");    
+
+    //B-TYPE Branch instructions
+    add("beq",    "1100011", "000");
+    add("bne",    "1100011", "001");
+    add("blt",    "1100011", "100");
+    add("bge",    "1100011", "101");
+    add("bltu",   "1100011", "110");
+    add("bgeu",   "1100011", "111");    
+
     // system / CSR immediate variants are sometimes encoded with opcode 1110011 and specific funct3,
     add("csrrw",  "1110011", "001");
     add("csrrs",  "1110011", "010");
@@ -160,11 +192,6 @@ std::vector<std::string> itype_ops_from_bits(const std::string &opcode_bits,
     return itype_ops_from_ints(opc, f3);
 }
 
-// Numeric hash function for the (opcode,funct3) pair
-std::size_t itype_pair_hash(uint8_t opcode7, uint8_t funct3) {
-    uint16_t key = make_itype_key_uint(opcode7, funct3);
-    return std::hash<uint16_t>{}(key);
-}
 
 // Convert a binary string to a signed decimal integer
 int bin2SignedDec(const std::string& binary, int significantBits) {
