@@ -3,4 +3,4 @@ riscv_decoder: decoder.cpp type_func.hpp
 	./riscv_decoder
 
 clean:
-	rm -f riscv_decoder rtype_funct_hash
+	rm -f riscv_decoder 

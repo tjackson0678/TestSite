@@ -80,6 +80,8 @@ int main() {
                 cout << " x" << stoi(rd, nullptr, 2) << ", " << imm_signed << "(x" << stoi(rs1, nullptr, 2) << ")\n";
             else if (codeType == "S_TYPE")
                 cout << " x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "(x" << stoi(binary.substr(18, 3), nullptr, 2) << ")\n";
+            else if (codeType == "SB_TYPE")
+                cout << " x" << stoi(rs1, nullptr, 2) << ", x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "\n";
             else
             cout << " x" << stoi(rd, nullptr, 2) << ", x" << stoi(rs1, nullptr, 2) << ", " << imm_signed << "\n";
         }
@@ -96,7 +98,6 @@ int main() {
         codeType = "S_TYPE";    
         rs2 = binary.substr(8, 5);
         imm = binary.substr(0, 8) + binary.substr(21, 4);
-        cout << "Immediate (binary): " << imm << endl;
         imm_signed = bin2SignedDec(imm, 12);
         i_print(opCode,binary.substr(18, 3));
 
@@ -120,6 +121,10 @@ int main() {
     // SB-Type instructions
     else if (opCode == SB_TYPE) {
         codeType = "SB_TYPE";
+        rs2 = binary.substr(7, 5);
+        imm = binary[0] + binary.substr(24,1) + binary.substr(1,6) + binary.substr(20,4) + "0";
+        imm_signed = bin2SignedDec(imm, 13);
+        i_print(opCode,func3);
     }
     // U-Type instructions
     else if (opCode == U_TYPE) {
