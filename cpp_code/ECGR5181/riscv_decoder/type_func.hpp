@@ -163,14 +163,6 @@ static inline std::unordered_map<uint16_t, std::vector<std::string>> build_itype
     add("bltu",   "1100011", "110");
     add("bgeu",   "1100011", "111");    
 
-    // system / CSR immediate variants are sometimes encoded with opcode 1110011 and specific funct3,
-    add("csrrw",  "1110011", "001");
-    add("csrrs",  "1110011", "010");
-    add("csrrc",  "1110011", "011");
-    add("csrrwi", "1110011", "101");
-    add("csrrsi", "1110011", "110");
-    add("csrrci", "1110011", "111");
-
     return m;
 }
 
