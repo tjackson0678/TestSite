@@ -16,7 +16,7 @@
 using namespace std;
 
 // Function to read a 32-bit binary string from user
-bool readBinaryString(std::string &binary) {
+bool readBinaryString(string &binary) {
     cout << "Enter a 32-bit binary number: ";
     cin >> binary;
     cout << endl; 
@@ -46,16 +46,16 @@ static inline uint16_t make_itype_key_uint(uint8_t opcode7, uint8_t funct3) {
 }
 
 // Helper to parse binary strings like "0110011" or "0100000"
-static inline uint32_t parse_bin_u32(const std::string &bits) {
-    return static_cast<uint32_t>(std::bitset<32>(bits).to_ulong());
+static inline uint32_t parse_bin_u32(const string &bits) {
+    return static_cast<uint32_t>(bitset<32>(bits).to_ulong());
 }
 
 // Build the R-type map (maps key -> list of possible instructions)
-static inline std::unordered_map<uint32_t, std::vector<std::string> > build_rtype_map_with_opcode() {
-    std::unordered_map<uint32_t, std::vector<std::string> > m;
+static inline unordered_map<uint32_t, vector<string> > build_rtype_map_with_opcode() {
+    unordered_map<uint32_t, vector<string> > m;
 
-    auto add = [&](const std::string &name, const std::string &opcode_str,
-                   const std::string &f3, const std::string &f7) {
+    auto add = [&](const string &name, const string &opcode_str,
+                   const string &f3, const string &f7) {
         uint8_t opcode = static_cast<uint8_t>(parse_bin_u32(opcode_str));
         uint8_t funct3 = static_cast<uint8_t>(parse_bin_u32(f3));
         uint8_t funct7 = static_cast<uint8_t>(parse_bin_u32(f7));
@@ -96,10 +96,10 @@ static inline std::unordered_map<uint32_t, std::vector<std::string> > build_rtyp
     return m;
 }
 
-static const std::unordered_map<uint32_t, std::vector<std::string> > rtype_map_with_opcode = build_rtype_map_with_opcode();
+static const unordered_map<uint32_t, vector<string> > rtype_map_with_opcode = build_rtype_map_with_opcode();
 
 // Lookup by numeric opcode/funct3/funct7
-std::vector<std::string> rtype_ops_from_ints(uint8_t opcode7, uint8_t funct3, uint8_t funct7) {
+vector<string> rtype_ops_from_ints(uint8_t opcode7, uint8_t funct3, uint8_t funct7) {
     uint32_t key = make_rtype_key_uint(opcode7, funct7, funct3);
     auto it = rtype_map_with_opcode.find(key);
     if (it == rtype_map_with_opcode.end()) return {};
@@ -107,9 +107,9 @@ std::vector<std::string> rtype_ops_from_ints(uint8_t opcode7, uint8_t funct3, ui
 }
 
 // Lookup by bit-strings like "0110011", "001", "0000000"
-std::vector<std::string> rtype_ops_from_bits(const std::string &opcode_bits,
-                                             const std::string &funct3_bits,
-                                             const std::string &funct7_bits) {
+vector<string> rtype_ops_from_bits(const string &opcode_bits,
+                                             const string &funct3_bits,
+                                             const string &funct7_bits) {
     uint8_t opc = static_cast<uint8_t>(parse_bin_u32(opcode_bits));
     uint8_t f3 = static_cast<uint8_t>(parse_bin_u32(funct3_bits));
     uint8_t f7 = static_cast<uint8_t>(parse_bin_u32(funct7_bits));
@@ -118,11 +118,11 @@ std::vector<std::string> rtype_ops_from_bits(const std::string &opcode_bits,
 
 
 // Build the I-type map (maps key -> list of possible instructions)
-static inline std::unordered_map<uint16_t, std::vector<std::string>> build_itype_map_with_opcode() {
-    std::unordered_map<uint16_t, std::vector<std::string>> m;
+static inline unordered_map<uint16_t, vector<string>> build_itype_map_with_opcode() {
+    unordered_map<uint16_t, vector<string>> m;
 
-    auto add = [&](const std::string &name, const std::string &opcode_str,
-                   const std::string &f3) {
+    auto add = [&](const string &name, const string &opcode_str,
+                   const string &f3) {
         uint8_t opcode = static_cast<uint8_t>(parse_bin_u32(opcode_str));
         uint8_t funct3 = static_cast<uint8_t>(parse_bin_u32(f3));
         uint16_t key = make_itype_key_uint(opcode, funct3);
@@ -163,13 +163,21 @@ static inline std::unordered_map<uint16_t, std::vector<std::string>> build_itype
     add("bltu",   "1100011", "110");
     add("bgeu",   "1100011", "111");    
 
+    // U-TYPE instruction
+    add("lui",    "0110111", "000");
+    add("auipc",  "0010111", "000");
+
+    // UJ-TYPE instruction
+    add("jal",    "1101111", "000");
+
+
     return m;
 }
 
-static const std::unordered_map<uint16_t, std::vector<std::string>> itype_map_with_opcode = build_itype_map_with_opcode();
+static const unordered_map<uint16_t, vector<string>> itype_map_with_opcode = build_itype_map_with_opcode();
 
 // Lookup by numeric opcode/funct3
-std::vector<std::string> itype_ops_from_ints(uint8_t opcode7, uint8_t funct3) {
+vector<string> itype_ops_from_ints(uint8_t opcode7, uint8_t funct3) {
     uint16_t key = make_itype_key_uint(opcode7, funct3);
     auto it = itype_map_with_opcode.find(key);
     if (it == itype_map_with_opcode.end()) return {};
@@ -177,8 +185,8 @@ std::vector<std::string> itype_ops_from_ints(uint8_t opcode7, uint8_t funct3) {
 }
 
 // Lookup by bit-strings like "0010011", "000"
-std::vector<std::string> itype_ops_from_bits(const std::string &opcode_bits,
-                                             const std::string &funct3_bits) {
+vector<string> itype_ops_from_bits(const string &opcode_bits,
+                                             const string &funct3_bits) {
     uint8_t opc = static_cast<uint8_t>(parse_bin_u32(opcode_bits));
     uint8_t f3  = static_cast<uint8_t>(parse_bin_u32(funct3_bits));
     return itype_ops_from_ints(opc, f3);
@@ -186,8 +194,8 @@ std::vector<std::string> itype_ops_from_bits(const std::string &opcode_bits,
 
 
 // Convert a binary string to a signed decimal integer
-int bin2SignedDec(const std::string& binary, int significantBits) {
-    int power = static_cast<int>(std::pow(2, significantBits - 1));
+int bin2SignedDec(const string& binary, int significantBits) {
+    int power = static_cast<int>(pow(2, significantBits - 1));
     int sum = 0;
 
     // Check the sign bit (most significant bit)
@@ -198,7 +206,7 @@ int bin2SignedDec(const std::string& binary, int significantBits) {
     // Add the values of the remaining bits
     for (int i = 1; i < significantBits; ++i) {
         if (binary[i] == '1') {
-            sum += static_cast<int>(std::pow(2, significantBits - 1 - i));
+            sum += static_cast<int>(pow(2, significantBits - 1 - i));
         }
     }
     return sum;

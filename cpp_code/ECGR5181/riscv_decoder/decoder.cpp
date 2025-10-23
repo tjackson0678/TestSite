@@ -18,13 +18,13 @@ using namespace std;
 #define I_TYPE_LOAD  "0000011"
 #define SB_TYPE "1100011"
 #define U_TYPE  "0110111" 
+#define AUIPC   "0010111"
 #define UJ_TYPE "1101111"
 
 
 // Main function
 int main() {
     
-    int bits[32];
     string codeType; 
     string binary;
     string opCode ;
@@ -39,14 +39,12 @@ int main() {
     while (true) {
     codeType = ""; 
 
+    // Read a 32-bit binary string from user
     if (!readBinaryString(binary)) {
         return 1;
     }
 
-    for (int i = 0; i < 32; ++i) {
-        bits[i] = binary[i] - '0';
-    }
-
+    // Extract fields from the binary string
     opCode = binary.substr(25, 7);
     rd = binary.substr(20, 5);
     func3 = binary.substr(17, 3); 
@@ -76,13 +74,18 @@ int main() {
                 if (i) cout << ", ";
                 cout << ops[i];
             }
-            if (codeType == "I_TYPE_LOAD")
+            if (codeType == "I_TYPE_LOAD") // Load instructions
                 cout << " x" << stoi(rd, nullptr, 2) << ", " << imm_signed << "(x" << stoi(rs1, nullptr, 2) << ")\n";
-            else if (codeType == "S_TYPE")
+            else if (codeType == "S_TYPE") // Store instructions
                 cout << " x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "(x" << stoi(binary.substr(18, 3), nullptr, 2) << ")\n";
-            else if (codeType == "SB_TYPE")
+            else if (codeType == "SB_TYPE") // Branch instructions
                 cout << " x" << stoi(rs1, nullptr, 2) << ", x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "\n";
+            else if (codeType == "U_TYPE") // U-Type instructions
+                cout << " x" << stoi(rd, nullptr, 2) << ", " << imm_signed << "\n";
+            else if (codeType == "UJ_TYPE") // UJ-Type instructions
+                cout << " x" << stoi(rd, nullptr, 2) << ", " << imm_signed << "\n";
             else
+            // I-Type arithmetic instructions
             cout << " x" << stoi(rd, nullptr, 2) << ", x" << stoi(rs1, nullptr, 2) << ", " << imm_signed << "\n";
         }
     };
@@ -127,9 +130,20 @@ int main() {
         i_print(opCode,func3);
     }
     // U-Type instructions
-    else if (opCode == U_TYPE) {
+    else if (opCode == U_TYPE || opCode == AUIPC) {
         codeType = "U_TYPE";
+        imm = binary.substr(0, 20) + "000000000000";
+        imm_signed = bin2SignedDec(imm, 32);
+        i_print(opCode, "000");
     }
+    // UJ-Type instructions
+    else if (opCode == UJ_TYPE) {
+        codeType = "UJ_TYPE";
+        imm = binary[0] + binary.substr(12,8) + binary.substr(11,1) + binary.substr(1,10) + "0";
+        imm_signed = bin2SignedDec(imm, 21);
+        i_print(opCode, "000");
+    }
+    
     else {
         cout << "Does not match any type" << endl;
     }
