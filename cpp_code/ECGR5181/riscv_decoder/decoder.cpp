@@ -25,15 +25,10 @@ using namespace std;
 // Main function
 int main() {
     
-    string codeType; 
-    string binary;
-    string opCode ;
-    string rd;
-    string func3; 
-    string rs1;
-    string rs2;
-    string func7;
-    string imm;
+    string codeType, binary, opCode, rd, func3,rs1 ,rs2,func7,imm;
+    string aluop, regread, regwrite, memread, memwrite, writemode;
+    string immmode, itypemode, shiftimmode, unsignedmode, auipcenable;
+    string branchenable, jumpenable;
     int imm_signed = 0;
 
     while (true) {
@@ -54,7 +49,18 @@ int main() {
     // Print functions used in decoder.cpp for R-Type instructions
     auto print = [&](const string &opc, const string &f3, const string &f7) {
         auto ops = rtype_ops_from_bits(opc, f3, f7);
-        cout << "OpCode=" << opc << "\n" << "f3=" << f3 << "\n" << "f7=" << f7 << "\nInstruction -> ";
+        if (!ops.empty()) {
+             string ins = ops[0];
+             setControlSignals(ins, aluop, regread, regwrite, memread, memwrite, writemode,
+                     immmode, itypemode, shiftimmode, unsignedmode, auipcenable,
+                     branchenable, jumpenable);
+
+        }
+        cout << "OpCode=" << opc << "\n" << "f3=" << f3 << "\n" << "f7=" << f7 << "\n";
+        cout << "ALU Op: " << aluop << "\n" << "RegRead: " << regread << "\n" << "RegWrite: " << regwrite << "\n" << "MemRead: " << memread << "\n" << "MemWrite: " << memwrite << "\n";
+        cout << "WriteMode: " << writemode << "\n" <<  "ImmMode: " << immmode << "\n" << "ITypeMode: " << itypemode << "\n" << "ShiftImmMode: " << shiftimmode << "\n" << "UnsignedMode: " << unsignedmode << "\n";
+        cout << "AUIPCEnable: " << auipcenable << "\n" << "BranchEnable: " << branchenable << "\n" << "JumpEnable: " << jumpenable << "\n";
+        cout << "Instruction -> ";
         if (ops.empty()) cout << "(none)\n";
         else {
             for (size_t i = 0; i < ops.size(); ++i) {
@@ -67,7 +73,18 @@ int main() {
     // Print function for I-Type and S-Type instructions
     auto i_print = [&](const string &opc, const string &f3) {
         auto ops = itype_ops_from_bits(opc, f3);
-        cout << "OpCode=" << opc << "\n" << "f3=" << f3 << "\nInstruction -> ";
+        if (!ops.empty()) {
+             string ins = ops[0];
+             setControlSignals(ins, aluop, regread, regwrite, memread, memwrite, writemode,
+                     immmode, itypemode, shiftimmode, unsignedmode, auipcenable,
+                     branchenable, jumpenable);
+
+        }
+        cout << "OpCode=" << opc << "\n" << "f3=" << f3 << "\n"; 
+        cout << "ALU Op: " << aluop << "\n" << "RegRead: " << regread << "\n" << "RegWrite: " << regwrite << "\n" << "MemRead: " << memread << "\n" << "MemWrite: " << memwrite << "\n";
+        cout << "WriteMode: " << writemode << "\n" <<  "ImmMode: " << immmode << "\n" << "ITypeMode: " << itypemode << "\n" << "ShiftImmMode: " << shiftimmode << "\n" << "UnsignedMode: " << unsignedmode << "\n";
+        cout << "AUIPCEnable: " << auipcenable << "\n" << "BranchEnable: " << branchenable << "\n" << "JumpEnable: " << jumpenable << "\n";
+        cout << "Instruction -> ";
         if (ops.empty()) cout << "(none)\n";
         else {
             for (size_t i = 0; i < ops.size(); ++i) {
@@ -77,7 +94,7 @@ int main() {
             if (codeType == "I_TYPE_LOAD") // Load instructions
                 cout << " x" << stoi(rd, nullptr, 2) << ", " << imm_signed << "(x" << stoi(rs1, nullptr, 2) << ")\n";
             else if (codeType == "S_TYPE") // Store instructions
-                cout << " x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "(x" << stoi(binary.substr(18, 3), nullptr, 2) << ")\n";
+                cout << " x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "(x" << stoi(rs1, nullptr, 2) << ")\n";
             else if (codeType == "SB_TYPE") // Branch instructions
                 cout << " x" << stoi(rs1, nullptr, 2) << ", x" << stoi(rs2, nullptr, 2) << ", " << imm_signed << "\n";
             else if (codeType == "U_TYPE") // U-Type instructions
@@ -99,10 +116,11 @@ int main() {
     // S-Type Store instructions
     else if (opCode == S_TYPE) {
         codeType = "S_TYPE";    
-        rs2 = binary.substr(8, 5);
-        imm = binary.substr(0, 8) + binary.substr(21, 4);
+        rs2 = binary.substr(7, 5);
+        imm = binary.substr(0, 7) + binary.substr(20, 5);
         imm_signed = bin2SignedDec(imm, 12);
-        i_print(opCode,binary.substr(18, 3));
+        cout << "Immediate: " << imm_signed << "\n";
+        i_print(opCode,func3);
 
     }
     // I-Type instructions

@@ -89,9 +89,10 @@ static inline unordered_map<uint32_t, vector<string> > build_rtype_map_with_opco
     add("sraw",  "0110011", "101", "0100000");
     add("srl",   "0110011", "101", "0000000");
     add("srlw",  "0111011", "001", "0100000");
-    add("sub",   "0110011", "000", "0110000");
+    add("sub",   "0110011", "000", "0100000");
     add("subw",  "0111011", "000", "0100000");
     add("xor",   "0110011", "100", "0000000");
+    add("fsub.s", "1010011", "000", "0000001");
 
     return m;
 }
@@ -211,3 +212,223 @@ int bin2SignedDec(const string& binary, int significantBits) {
     }
     return sum;
 }
+
+// Function to set control signals based on instruction type and opcode
+void setControlSignals(const string& ins, string& aluop, string& regread, string& regwrite, 
+                      string& memread, string& memwrite, string& writemode, string& immmode,
+                      string& itypemode, string& shiftimmode, string& unsignedmode,
+                      string& auipcenable, string& branchenable, string& jumpenable) {
+    
+    // Default values - everything disabled
+    aluop = "0000";
+    regread = "0";
+    regwrite = "0";
+    memread = "0";
+    memwrite = "0";
+    writemode = "00";
+    immmode = "000";
+    itypemode = "0";
+    shiftimmode = "0";
+    unsignedmode = "0";
+    auipcenable = "0";
+    branchenable = "0";
+    jumpenable = "0";
+    
+    // R-Type arithmetic instructions
+    if (ins == "add" || ins == "addw") {
+        aluop = "0000"; // ADD
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "sub" || ins == "subw") {
+        aluop = "0001"; // SUB
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "and") {
+        aluop = "0010"; // AND
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "or") {
+        aluop = "0011"; // OR
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "xor") {
+        aluop = "0100"; // XOR
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "sll" || ins == "sllw") {
+        aluop = "0101"; // SLL
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "srl" || ins == "srlw") {
+        aluop = "0110"; // SRL
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "sra" || ins == "sraw") {
+        aluop = "0111"; // SRA
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "slt") {
+        aluop = "1000"; // SLT
+        regread = "1";
+        regwrite = "1";
+    }
+    else if (ins == "sltu") {
+        aluop = "1000"; // SLT
+        regread = "1";
+        regwrite = "1";
+        unsignedmode = "1";
+    }
+    
+    // I-Type arithmetic instructions
+    else if (ins == "addi" || ins == "addiw") {
+        aluop = "0000"; // ADD
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+    }
+    else if (ins == "andi") {
+        aluop = "0010"; // AND
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+    }
+    else if (ins == "ori") {
+        aluop = "0011"; // OR
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+    }
+    else if (ins == "slti") {
+        aluop = "1000"; // SLT
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+    }
+    else if (ins == "sltiu") {
+        aluop = "1000"; // SLT
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+        unsignedmode = "1";
+    }
+    else if (ins == "slli" || ins == "slliw") {
+        aluop = "0101"; // SLL
+        regread = "1";
+        regwrite = "1";
+        immmode = "001"; // I-type immediate
+        shiftimmode = "1";
+    }
+    
+    // Load instructions
+    else if (ins == "lb" || ins == "lh" || ins == "lw" || ins == "ld" || 
+             ins == "lbu" || ins == "lhu" || ins == "lwu") {
+        aluop = "0000"; // ADD for address calculation
+        regread = "1";
+        regwrite = "1";
+        memread = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+        
+        // Set write mode based on load type
+        if (ins == "lb" || ins == "lbu") {
+            writemode = "01"; // Byte
+            if (ins == "lbu") unsignedmode = "1";
+        }
+        else if (ins == "lh" || ins == "lhu") {
+            writemode = "10"; // Half-word
+            if (ins == "lhu") unsignedmode = "1";
+        }
+        else if (ins == "lw" || ins == "lwu") {
+            writemode = "11"; // Word
+            if (ins == "lwu") unsignedmode = "1";
+        }
+        else if (ins == "ld") {
+            writemode = "00"; // Double-word
+        }
+    }
+    
+    // Store instructions
+    else if (ins == "sb" || ins == "sh" || ins == "sw" || ins == "sd") {
+        aluop = "0000"; // ADD for address calculation
+        regread = "1";
+        memwrite = "1";
+        immmode = "010"; // S-type immediate
+        
+        // Set write mode based on store type
+        if (ins == "sb") {
+            writemode = "01"; // Byte
+        }
+        else if (ins == "sh") {
+            writemode = "10"; // Half-word
+        }
+        else if (ins == "sw") {
+            writemode = "11"; // Word
+        }
+        else if (ins == "sd") {
+            writemode = "00"; // Double-word
+        }
+    }
+    
+    // Branch instructions
+    else if (ins == "beq" || ins == "bne" || ins == "blt" || 
+             ins == "bge" || ins == "bltu" || ins == "bgeu") {
+        regread = "1";
+        branchenable = "1";
+        immmode = "011"; // SB-type immediate
+        
+        if (ins == "beq") {
+            aluop = "1001"; // BEQ
+        }
+        else if (ins == "bne") {
+            aluop = "1010"; // BNE
+        }
+        else if (ins == "blt" || ins == "bltu") {
+            aluop = "1011"; // BLT
+            if (ins == "bltu") unsignedmode = "1";
+        }
+        else if (ins == "bge" || ins == "bgeu") {
+            aluop = "1100"; // BGE
+            if (ins == "bgeu") unsignedmode = "1";
+        }
+    }
+    
+    // U-Type instructions
+    else if (ins == "lui") {
+        regwrite = "1";
+        immmode = "100"; // U-type immediate
+    }
+    else if (ins == "auipc") {
+        regwrite = "1";
+        immmode = "100"; // U-type immediate
+        auipcenable = "1";
+    }
+    
+    // Jump instructions
+    else if (ins == "jal") {
+        regwrite = "1";
+        jumpenable = "1";
+        immmode = "101"; // UJ-type immediate
+    }
+    else if (ins == "jalr") {
+        aluop = "0000"; // ADD for address calculation
+        regread = "1";
+        regwrite = "1";
+        jumpenable = "1";
+        immmode = "001"; // I-type immediate
+        itypemode = "1";
+    }
+}
+
