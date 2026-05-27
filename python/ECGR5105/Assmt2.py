@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-df = pd.read_csv('python/ECGR5105/Housing.csv')
+# Get current and running directory
+running_directory = os.path.dirname(os.path.abspath(__file__))
+
+df = pd.read_csv(os.path.join(running_directory, 'Housing.csv'))
 #df =pd.read_csv('https://raw.githubusercontent.com/satishgunjal/datasets/master/univariate_profits_and_populations_from_the_cities.csv')
 #print(df.head()) # To get first n rows from the dataset default value of n is 5
 
@@ -12,7 +16,7 @@ plt.grid()
 plt.ylabel('Price of home in 1,000s')
 plt.xlabel('Area of home in 1000s SqFt')
 plt.title('Scatter plot of training data')
-#plt.show()
+plt.show()
 
 #Lets create a matrix with a dimension of m by 1. m is the number of observations
 m = df.price.size
@@ -32,8 +36,9 @@ df.insert(0, "area2",X_2)
 X = df.loc[:,['intercept','bathrooms']]
 y = df.price2
 theta = np.zeros(2)
-iterations = 1200;
-alpha = 0.09;
+iterations = 1200
+# use a smaller, safer learning rate to avoid overflow
+alpha = 0.01
 
 def computeCost(X,y,theta):
   """
@@ -74,46 +79,63 @@ def gradientDescent(X, y, theta, alpha, iterations):
   -----------------
   theta : Final Value. 1D array of fitting parameters or weights. Dimension (1 x n)
   cost_history: Conatins value of cost for each iteration. 1D array. Dimansion(m x 1)  """
+  # ensure inputs are numpy arrays with float dtype
+  X = np.array(X, dtype=float)
+  y = np.array(y, dtype=float)
+  theta = np.array(theta, dtype=float)
+
   cost_history = np.zeros(iterations)
+  m_local = X.shape[0]
 
   for i in range(iterations):
     predictions = X.dot(theta)
-    errors = np.subtract(predictions, y)
-    sum_delta = (alpha / m) * X.transpose().dot(errors);
-    theta = theta - sum_delta;
+    errors = predictions - y
+    sum_delta = (alpha / m_local) * X.T.dot(errors)
+    theta = theta - sum_delta
     cost_history[i] = computeCost(X, y, theta)
+    # stop early if numerical issues appear
+    if np.any(np.isnan(theta)) or np.any(np.isinf(theta)):
+      print(f"Stopping early at iteration {i} due to numerical instability")
+      cost_history[i+1:] = np.nan
+      break
   return theta, cost_history
 
-Xarray = X.loc[:,['intercept','bathrooms']].values
-yarray = y.values
+Xarray = X.loc[:,['intercept','bathrooms']].values.astype(float)
+yarray = y.values.astype(float)
+# initialize theta for this model (n features)
+theta = np.zeros(Xarray.shape[1])
 theta, cost_history = gradientDescent(Xarray, yarray, theta, alpha, iterations)
 print('Final value of theta - Bathrooms =', theta)
 print('cost_history =', cost_history)
 
 X = df.loc[:,['intercept','bedrooms']]
-Xarray = X.loc[:,['intercept','bedrooms']].values
-yarray = y.values
+Xarray = X.loc[:,['intercept','bedrooms']].values.astype(float)
+yarray = y.values.astype(float)
+theta = np.zeros(Xarray.shape[1])
 theta, cost_history = gradientDescent(Xarray, yarray, theta, alpha, iterations)
 print('Final value of theta - Bedrooms =', theta)
 print('cost_history =', cost_history)
 
 X = df.loc[:,['intercept','stories']]
-Xarray = X.loc[:,['intercept','stories']].values
-yarray = y.values
+Xarray = X.loc[:,['intercept','stories']].values.astype(float)
+yarray = y.values.astype(float)
+theta = np.zeros(Xarray.shape[1])
 theta, cost_history = gradientDescent(Xarray, yarray, theta, alpha, iterations)
 print('Final value of theta - Stories =', theta)
 print('cost_history =', cost_history)
 
 X = df.loc[:,['intercept','parking']]
-Xarray = X.loc[:,['intercept','parking']].values
-yarray = y.values
+Xarray = X.loc[:,['intercept','parking']].values.astype(float)
+yarray = y.values.astype(float)
+theta = np.zeros(Xarray.shape[1])
 theta, cost_history = gradientDescent(Xarray, yarray, theta, alpha, iterations)
 print('Final value of theta - Parking =', theta)
 print('cost_history =', cost_history)
 
 X = df.loc[:,['intercept','area2']]
-Xarray = X.loc[:,['intercept','area2']].values
-yarray = y.values
+Xarray = X.loc[:,['intercept','area2']].values.astype(float)
+yarray = y.values.astype(float)
+theta = np.zeros(Xarray.shape[1])
 theta, cost_history = gradientDescent(Xarray, yarray, theta, alpha, iterations)
 print('Final value of theta - Area =', theta)
 print('cost_history =', cost_history)

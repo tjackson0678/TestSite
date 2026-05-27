@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 running_directory = os.path.dirname(os.path.abspath(__file__))
 
 # create a simple dataset of people
-df = pd.read_csv('python/ECGR5105/Energy.csv')
+df = pd.read_csv(os.path.join(running_directory, 'Energy.csv'))
 
 
 Y = df.Y1.values
