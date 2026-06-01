@@ -75,7 +75,7 @@ def plot_gradient_descent(learning_rate):
     plt.grid()
     plt.savefig(file_path)
 
-    #plt.show()
+    plt.show()
 
 # Interactive visualization of learning rates
 def plot_gradient_descent2(learning_rate):

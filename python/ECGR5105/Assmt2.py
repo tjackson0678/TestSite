@@ -16,7 +16,7 @@ plt.grid()
 plt.ylabel('Price of home in 1,000s')
 plt.xlabel('Area of home in 1000s SqFt')
 plt.title('Scatter plot of training data')
-plt.show()
+#plt.show()
 
 #Lets create a matrix with a dimension of m by 1. m is the number of observations
 m = df.price.size

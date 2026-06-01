@@ -175,7 +175,7 @@ plt.xlabel('Number of components')
 plt.ylabel('Cumulative explained variance')
 plt.title('Variance Explained by PCA Components')
 plt.grid(True)
-plt.show()
+#plt.show()
 
 ##### ---- END NEW STUFF FROM PCA COLAB 
 
