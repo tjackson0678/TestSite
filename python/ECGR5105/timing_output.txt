@@ -1,0 +1,4 @@
+Assmt1 1.928 22.774 total
+Assmt2 0.669 6.713 total
+Assmt3 2.137 10.991 total
+FinalProject 2.210 10.768 total
