@@ -7,11 +7,11 @@ import os
 running_directory = os.path.dirname(os.path.abspath(__file__))
 
 # create a simple dataset of people
-df = pd.read_csv(os.path.join(running_directory, 'Energy.csv'))
+df = pd.read_csv(os.path.join(running_directory, 'Energy_normalized.csv'))
 
 theta0 = 0
 theta1 = .5
-learn_rate = 0.06
+learn_rate = 0.3    
 
 # File name and path
 file_name = "regressionModel.pdf"
@@ -60,14 +60,14 @@ def gradient_descent(X, y, learning_rate, iterations):
 def plot_gradient_descent(learning_rate):
     iterations = 50
     _, cost_history = gradient_descent(df.X1, df.Y1, learning_rate=learning_rate, iterations=iterations)
-    _, cost_history_2 = gradient_descent(df.X2, df.Y1, learning_rate=0.05, iterations=iterations)
-    _, cost_history_3 = gradient_descent(df.X3, df.Y1, learning_rate=0.08, iterations=iterations)
+    _, cost_history_2 = gradient_descent(df.X2, df.Y1, learning_rate=0.3, iterations=iterations)
+    _, cost_history_3 = gradient_descent(df.X3, df.Y1, learning_rate=0.3, iterations=iterations)
 
     
     plt.figure(figsize=(8, 5))
     plt.plot(range(iterations), cost_history, label=f'X1 Learning Rate: {learning_rate}', color='blue')
-    plt.plot(range(iterations), cost_history_2, label=f'X2 Learning Rate: {0.05}', color='red')
-    plt.plot(range(iterations), cost_history_3, label=f'X3 Learning Rate: {0.08}', color='green')
+    plt.plot(range(iterations), cost_history_2, label=f'X2 Learning Rate: {0.3}', color='red')
+    plt.plot(range(iterations), cost_history_3, label=f'X3 Learning Rate: {0.3}', color='green')
     plt.xlabel('Iterations')
     plt.ylabel('Cost Function')
     plt.title('Effect of Learning Rate on Gradient Descent Convergence')
@@ -84,7 +84,7 @@ def plot_gradient_descent2(learning_rate):
 
     
     plt.figure(figsize=(8, 5))
-    plt.plot(range(iterations), cost_history_3, label=f'X3 Learning Rate: {0.08}', color='green')
+    plt.plot(range(iterations), cost_history_3, label=f'X3 Learning Rate: {0.3}', color='green')
     plt.xlabel('Iterations')
     plt.ylabel('Cost Function')
     plt.title('Effect of Learning Rate on Gradient Descent Convergence')
@@ -94,16 +94,21 @@ def plot_gradient_descent2(learning_rate):
     plt.show()
 
 
+# Normalized the data for better convergence
+#df.X1 = (df.X1 - df.X1.mean()) / df.X1.std()
+#df.X2 = (df.X2 - df.X2.mean()) / df.X2.std()
+#df.X3 = (df.X3 - df.X3.mean()) / df.X3.std()
+#df.Y1 = (df.Y1 - df.Y1.mean()) / df.Y1.std()
 
 theta_opt, cost = gradient_descent(df.X1, df.Y1, learning_rate=learn_rate, iterations=30)
 print("Optimized X1 Theta:", theta_opt)
 print("cost at optimized theta: ",cost[-1], "\n")
 
-theta_opt, cost = gradient_descent(df.X2, df.Y1, learning_rate=.05, iterations=30)
+theta_opt, cost = gradient_descent(df.X2, df.Y1, learning_rate=.3, iterations=30)
 print("Optimized X2 Theta:", theta_opt)
 print("cost at X2 optimized theta",cost[-1], "\n")
 
-theta_opt, cost = gradient_descent(df.X3, df.Y1, learning_rate=.08, iterations=30)
+theta_opt, cost = gradient_descent(df.X3, df.Y1, learning_rate=.3, iterations=30)
 print("Optimized X3 Theta:", theta_opt)
 print("cost at X3 optimized theta",cost[-1], "\n")
 
